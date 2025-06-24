@@ -20,6 +20,11 @@ x-n8n: &service-n8n
     - N8N_ENCRYPTION_KEY
     - N8N_USER_MANAGEMENT_JWT_SECRET
     - OLLAMA_HOST=ollama:11434
+    - EXECUTIONS_PRUNE=true
+    - EXECUTIONS_PRUNE_MAX_COUNT=1000
+    - EXECUTIONS_PRUNE_TIMEOUT=7
+    - GENERIC_TIMEZONE=America/Argentina/Cordoba
+    - N8N_DEFAULT_LOCALE=es-AR
   env_file:
     - .env
 
