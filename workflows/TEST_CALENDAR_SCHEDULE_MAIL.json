@@ -1,0 +1,426 @@
+{
+  "name": "TEST_CALENDAR_SCHEDULE_MAIL",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        160,
+        180
+      ],
+      "id": "432eac0f-db6c-42e7-8532-49bd723110eb",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Debes de crear un correo electronico con intencion de agendar reunion con un cliente cuyos datos hemos recogido a traves de un formulario. Retorna unicamente el email como respuesta, sin definir un asunto, solo el cuerpo del email. Inserta este enlace \"https://calendar.app.google/Lzz3X1h3mKWCKPxi8\" donde el cliente ira a agendar la cita.\n\nLos datos de entrada son los siguientes:\nNombre: {{ $json['Tu nombre'] }}\nApellido: {{ $json['Tu apellido'] }}\nE-mail: {{ $json['Tu email'] }}\nNecesidad: {{ $json.Comentarios }}\n\n-------------------\nEjemplo de correo electronico, emplealo a modo de referencia pero no lo uses como guia absoluta, si manten exactamente igual el contenido estatico que no se encuentra entre llaves (donde tu debes insertar la respuesta generada):\n\nBuenos dias {nombre},\n\nMe complace enormemente tu interes, {texto personalizado persuasivo relacionado con necesidad}.\n\nSaludos,\nFabrizzio Lo Presti\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Eres un redactor de corres electronicos profesional, altamente persuasivo, calido y breve. Tu objetivo principal es persuadir al cliente con un copywriting profesional"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        0
+      ],
+      "id": "d841c0c2-612c-4857-befd-8a757e827ea5",
+      "name": "CUSTOM_AI_MESSAGE"
+    },
+    {
+      "parameters": {
+        "formTitle": "CONTACTO",
+        "formDescription": "Formulario de contacto para clientes",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Tu nombre",
+              "placeholder": "Ingresa tu nombre",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tu apellido",
+              "placeholder": "Ingresa tu apellido",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tu email",
+              "fieldType": "email",
+              "placeholder": "prueba@gmail.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tu presupuesto",
+              "fieldType": "number",
+              "placeholder": "1200",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Comentarios",
+              "fieldType": "textarea",
+              "placeholder": "Algo que quieras agregar"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2dd7220c-9429-4762-b022-65246bb5a0d5",
+      "name": "CUSTOM_FORM",
+      "webhookId": "e7c10123-901c-42ff-8456-06c37393b228"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('CUSTOM_FORM').item.json[\"Tu email\"] }}",
+        "subject": "Automatizacion de proceso",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        0
+      ],
+      "id": "30c95a65-9071-427d-833d-d054c3aa4a70",
+      "name": "SEND_FORM",
+      "webhookId": "33e98978-97dc-4324-8f24-df4d2313dd88",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "calendarId": {
+          "__rl": true,
+          "value": "fabrizziolopresti1999@gmail.com",
+          "mode": "list",
+          "cachedResultName": "fabrizziolopresti1999@gmail.com"
+        },
+        "triggerOn": "eventCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        320
+      ],
+      "id": "1e471edf-014a-4d36-a3d1-8226fafd6cc0",
+      "name": "Google Calendar Trigger",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "8YKxyap5IX0ptF7s",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        160,
+        520
+      ],
+      "id": "cb7f6b57-14c5-4164-b77b-a8bb1f33439a",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.JsonParse.email }}",
+        "subject": "Recordatorio cita",
+        "emailType": "text",
+        "message": "={{ $json.JsonParse.mensaje }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        320
+      ],
+      "id": "4d5169be-e4e0-41d4-a8d9-5b3e9f1ebae7",
+      "name": "SEND_CONFIRMATION_DATE",
+      "webhookId": "66975411-ddd5-482f-9403-fa2a07b67a10",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Eres una API que procesa datos de citas y genera respuestas JSON. Tu única función es retornar un objeto JSON válido sin ningún texto adicional, explicación o formato markdown.\n\nDATOS DE ENTRADA:\n- Nombre del cliente: {{ $json.description }}\n- Fecha de la cita: {{ $json.start.dateTime.toDateTime().setLocale('es').format('dd LLL yyyy') }}\n- Horario completo: {{ $json.start.dateTime.toDateTime() }}\n- Zona horaria: {{ $json.start.timeZone }}\n- Email del cliente: {{ $json.attendees[0].email }}\n\nINSTRUCCIONES:\n1. Extrae el nombre del cliente desde el campo description\n2. Genera un email de confirmación siguiendo este formato exacto:\n   \"Buenos dias {nombre},\\n Su cita fue agendada correctamete para el dia {fecha} {hora}, {zona_horaria}. Recuerda asistir a horario.\\n\\nSaludos,\\nFabrizzio Lo Presti\"\n3. Extrae la hora en formato HH:MM del horario completo\n4. Retorna ÚNICAMENTE el siguiente objeto JSON en UNA SOLA LÍNEA (sin ```json, sin explicaciones, sin texto adicional, sin saltos de línea):\n\n{\"nombre\": \"nombre_extraido_de_description\", \"email\": \"{{ $json.attendees[0].email }}\", \"fecha\": \"fecha_en_formato_dd_LLL_yyyy\", \"horario\": \"hora_en_formato_HH:MM\", \"zonaHoraria\": \"zona_horaria_extraida\", \"mensaje\": \"email_generado_con_formato_especificado\"}\n\nIMPORTANTE: \n- Responde SOLAMENTE con el objeto JSON en UNA SOLA LÍNEA\n- No agregues texto antes ni después del JSON\n- No uses saltos de línea en la respuesta JSON\n- Dentro del campo \"mensaje\", usa \\n para los saltos de línea del email",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Eres un redactor de corres electronicos profesional, altamente persuasivo, calido y breve. Tu objetivo principal es persuadir al cliente con un copywriting profesional"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        220,
+        320
+      ],
+      "id": "98d7b204-b34f-4c3b-8b2b-831ee6e7232e",
+      "name": "CUSTOM_DATE_MESSAGE"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "DATES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nombre": "={{ $('JSON_RESPONSE').item.json.JsonParse.nombre }}",
+            "Fase": "AGENDADO",
+            "Correo electronico": "={{ $('JSON_RESPONSE').item.json.JsonParse.email }}"
+          },
+          "matchingColumns": [
+            "Correo electronico"
+          ],
+          "schema": [
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Fase",
+              "displayName": "Fase",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Correo electronico",
+              "displayName": "Correo electronico",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        960,
+        320
+      ],
+      "id": "409fcd51-1533-4ad1-883f-999e3b76cbdb",
+      "name": "CRM",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ENz9FjMCxgwWy2qy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d40376fc-0a02-46ce-adfc-fe0981cb9b43",
+              "name": "JsonParse",
+              "value": "={{ JSON.parse($json.text) }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        560,
+        320
+      ],
+      "id": "25f7270e-5577-4eb7-b618-1fb7609cf85f",
+      "name": "JSON_RESPONSE"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CUSTOM_AI_MESSAGE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CUSTOM_FORM": {
+      "main": [
+        [
+          {
+            "node": "CUSTOM_AI_MESSAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CUSTOM_AI_MESSAGE": {
+      "main": [
+        [
+          {
+            "node": "SEND_FORM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Calendar Trigger": {
+      "main": [
+        [
+          {
+            "node": "CUSTOM_DATE_MESSAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CUSTOM_DATE_MESSAGE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CUSTOM_DATE_MESSAGE": {
+      "main": [
+        [
+          {
+            "node": "JSON_RESPONSE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND_CONFIRMATION_DATE": {
+      "main": [
+        [
+          {
+            "node": "CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JSON_RESPONSE": {
+      "main": [
+        [
+          {
+            "node": "SEND_CONFIRMATION_DATE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bac68d47-7b94-4342-9ef8-2f8547ef7a44",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "uBRdepDbQOEGOl70",
+  "tags": []
+}
