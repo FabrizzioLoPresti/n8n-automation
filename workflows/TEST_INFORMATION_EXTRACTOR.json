@@ -1,0 +1,107 @@
+{
+  "name": "TEST_INFORMATION_EXTRACTOR",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a2bb654b-0282-4c83-9137-512551b8a4c0",
+      "name": "When chat message received",
+      "webhookId": "fab004db-9028-4e38-8238-58d0791cd721"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "dni",
+              "description": "Todos los numeros identificativos nacionales de Argentina como DNI, CUIT, CUIL, etc"
+            },
+            {
+              "name": "cuit",
+              "description": "Todos los numeros identificativos nacionales de Argentina como DNI, CUIT, CUIL, etc"
+            },
+            {
+              "name": "cuil",
+              "description": "Todos los numeros identificativos nacionales de Argentina como DNI, CUIT, CUIL, etc"
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        160,
+        0
+      ],
+      "id": "efcc4ca6-2f90-45cd-a65c-164e9bb5e0dd",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        120,
+        180
+      ],
+      "id": "f03d5c6e-0e1a-4eef-853f-32efd93aa281",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "072d2352-d933-42fb-9263-d4e849669ab0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "z1JDoFhEtHxasbBz",
+  "tags": []
+}

@@ -1,0 +1,513 @@
+{
+  "name": "TEST_DATA_TRANSFORMATION",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2f4b18d1-20d0-4bc4-84b1-48d0b930e335",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd1e21d2-6f72-42a8-82a2-6e00a07cd3cf",
+              "name": "name",
+              "value": "={{ $json.name.toUpperCase() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a564a1cb-0517-44d0-9307-6daa681b476c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0688839-36b2-4e35-a0b5-d8690d08f9ba",
+              "leftValue": "={{ $json.year }}",
+              "rightValue": 30,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ],
+      "id": "87244841-4265-4a45-8c6d-4d6083b316ef",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        100
+      ],
+      "id": "88452f87-0b3c-47b1-954a-ea677362b2a2",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.address.street }}",
+                    "rightValue": "Paysandu",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "725c53d1-df74-4e84-9674-83477491ee0e"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ef2dd688-fb26-4a50-9780-073d9720bfd2",
+                    "leftValue": "={{ $json.address.street }}",
+                    "rightValue": "Veracruz",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8020a8d1-a84b-472b-b118-103d6083c826",
+                    "leftValue": "={{ $json.address.street }}",
+                    "rightValue": "Medellin",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1100,
+        -100
+      ],
+      "id": "221b61d1-677c-4de0-bed7-eea17a730c3f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        -220
+      ],
+      "id": "3e2d6ba3-21eb-4e6f-8b3e-81f581b5526e",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.year += 5;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1540,
+        -220
+      ],
+      "id": "59084cce-2643-4057-baa9-8bc1f494acad",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "74a8355c-09f5-4dc0-b7a6-c1ec1f7698c1",
+              "leftValue": "={{ $json.cars }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        0
+      ],
+      "id": "fdbe8f24-ca31-43a5-b4c0-33740dbc4dea",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "edc910b0-8a9a-4847-862f-b80d2e3ccd2d",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "cars",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        -220
+      ],
+      "id": "4b20ca29-4dc3-4a5d-aa4f-ee991cb257d7",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "cars"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1980,
+        -220
+      ],
+      "id": "44119925-031e-4cc8-9a46-6526a01f00e2",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "field": "cars[0]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        2200,
+        -220
+      ],
+      "id": "f7607bc2-fc37-4d22-82a2-df3d828e7828",
+      "name": "Summarize"
+    }
+  ],
+  "pinData": {
+    "When clicking ‘Execute workflow’": [
+      {
+        "json": {
+          "id": 1,
+          "name": "Fabrizzio",
+          "year": 25,
+          "active": true,
+          "cars": [
+            "Ferrari",
+            "Mercedes",
+            "BMW"
+          ],
+          "address": {
+            "street": "Paysandu",
+            "number": 1051,
+            "hood": "Res America"
+          }
+        }
+      },
+      {
+        "json": {
+          "id": 2,
+          "name": "Martin",
+          "year": 21,
+          "active": true,
+          "cars": [
+            "Fiat",
+            "Audi"
+          ],
+          "address": {
+            "street": "Managua",
+            "number": 222,
+            "hood": "Res America"
+          }
+        }
+      },
+      {
+        "json": {
+          "id": 3,
+          "name": "Jose",
+          "year": 41,
+          "active": false,
+          "cars": [],
+          "address": {
+            "street": "Paysandu",
+            "number": 741,
+            "hood": "Res America"
+          }
+        }
+      },
+      {
+        "json": {
+          "id": 4,
+          "name": "Joaquin",
+          "year": 25,
+          "active": true,
+          "cars": [
+            "BMW"
+          ],
+          "address": {
+            "street": "Paysandu",
+            "number": 512,
+            "hood": "Res America"
+          }
+        }
+      },
+      {
+        "json": {
+          "id": 5,
+          "name": "Martin",
+          "year": 21,
+          "active": true,
+          "cars": [
+            "Fiat",
+            "Audi"
+          ],
+          "address": {
+            "street": "Managua",
+            "number": 222,
+            "hood": "Res America"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ac5cd205-d455-4e4d-8fb1-cac5b34f93cb",
+  "meta": {
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "pGXEvuDREzWVDYxk",
+  "tags": []
+}

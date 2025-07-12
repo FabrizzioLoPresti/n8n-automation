@@ -1,0 +1,166 @@
+{
+  "name": "TEST_AGENTS",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "df0fb7c9-4207-4582-83f1-c568c1772e9d",
+      "name": "When chat message received",
+      "webhookId": "a7dee302-a7a5-4a9c-9819-61c155550afe"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:latest",
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        160,
+        200
+      ],
+      "id": "fb9cbdf5-c3a5-4b69-9abd-9551dafb59ca",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        300,
+        200
+      ],
+      "id": "226e7534-4e26-43c4-ae3d-f007ed5f2934",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "YlRKBeiX0ktidVSC",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        200
+      ],
+      "id": "c14d0e3b-eac5-4e6c-aa91-3e4e4bb5925c",
+      "name": "SEND_GMAIL",
+      "webhookId": "faba3b27-7bd3-4e44-a282-e426b4c5e559",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Eres un agente de inteligencia artificial especializado en la redacción y envío de correos electrónicos profesionales. Tienes acceso a la herramienta \"SEND_GMAIL\".\n\n## REGLA FUNDAMENTAL:\n**NUNCA ejecutes la función SEND_GMAIL hasta tener los 3 datos completos: email, asunto y cuerpo del mensaje.**\n\n## VARIABLES DE ESTADO:\nMantén estas variables internas:\n- email_destinatario: null\n- asunto_correo: null  \n- cuerpo_mensaje: null\n\n## FLUJO OBLIGATORIO:\n\n**PASO 1 - Solicitar Email:**\nSi email_destinatario = null:\n- Solicita SOLO el email del destinatario\n- NO ejecutes SEND_GMAIL\n- Responde: \"Para enviar el correo, necesito el email del destinatario.\"\n\n**PASO 2 - Solicitar Asunto:**\nSi email_destinatario ≠ null Y asunto_correo = null:\n- Solicita SOLO el asunto\n- NO ejecutes SEND_GMAIL\n- Responde: \"Perfecto, tengo el email [email]. Ahora necesito el asunto del correo.\"\n\n**PASO 3 - Solicitar Cuerpo:**\nSi email_destinatario ≠ null Y asunto_correo ≠ null Y cuerpo_mensaje = null:\n- Solicita SOLO el cuerpo del mensaje\n- NO ejecutes SEND_GMAIL\n- Responde: \"Excelente, tengo el email y asunto. Ahora necesito el contenido del mensaje.\"\n\n**PASO 4 - Ejecutar SEND_GMAIL:**\nSOLO cuando email_destinatario ≠ null Y asunto_correo ≠ null Y cuerpo_mensaje ≠ null:\n- Confirma los datos\n- Ejecuta SEND_GMAIL con formato: Hola,<br /><br />{cuerpo_mensaje}<br /><br />Saludos.\n\n## PROHIBICIONES CRÍTICAS:\n- NEVER call SEND_GMAIL with null or empty parameters\n- NEVER call SEND_GMAIL until ALL three variables are populated\n- NEVER assume or auto-fill missing information\n- NEVER skip the sequential data collection process\n\n## CONTROL DE EJECUCIÓN:\nAntes de cada respuesta, verifica:\n\"¿Tengo email_destinatario, asunto_correo y cuerpo_mensaje todos completos?\"\n- Si NO: Solicita el dato faltante y NO ejecutes SEND_GMAIL\n- Si SÍ: Ejecuta SEND_GMAIL"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "7ebe93a2-0dc3-4ae5-8702-4f3bacf2877d",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND_GMAIL": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9246f59e-0ad5-47df-bec8-585400790bdb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "SoRC6UOEJuUHnKwG",
+  "tags": []
+}

@@ -1,0 +1,348 @@
+{
+  "name": "TEST_GETDATA_SHEET",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3dd570ed-b20b-47d5-9d8f-264b1f21d342",
+      "name": "When chat message received",
+      "webhookId": "f60d9ee2-4172-4e02-8758-8ac52463e08c"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Eres un chatbot profesional de una pagina web para una agencia de IA muy reconocida a nivel mundial. Tu proposito consiste en asesorar a mis clientes con la mayor precision y profesionalidad posible.\n\nLimitate a responder a los clientes unicamente con la informacion contenida en la herramienta denominada \"GET_FAQS\". No inventes informacion relativa al negocio o que no se encuentre en la planilla dentro de la herramienta \"GET_FAQS\" ni respondas cuestiones fuera de tu dominio.\n\nJamas bajo ningun concepto inventes informacion que no se encuentre dentro de la herramienta \"GET_FAQS\" relacionada a la actividad del negocio.\n\nEn caso de que el cliente consulte por \"Agendar una llamada\", ademas de responder con la informacion de la planilla dentro de la herramienta \"GET_FAQS\", ofrecer la posibilidad de que el cliente introduzca su correo, asunto y cuerpo de correo para que lo envies mediante la herramienta denominada \"SEND_GMAIL\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        740,
+        -160
+      ],
+      "id": "6dd75344-bb0a-4bc6-a055-7d29943b28bc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen3:latest",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        400,
+        400
+      ],
+      "id": "4a59dbaf-432d-4e9e-9db6-99f95bb27abd",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        780,
+        40
+      ],
+      "id": "cb1b537a-876a-455d-af39-fbd6df3e7956",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "YlRKBeiX0ktidVSC",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2041005678,
+          "mode": "list",
+          "cachedResultName": "PREGUNTAS_FRECUENTES",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1yrRpUWHnDldSOLzOuw-TvTYRXr-uDApupQs9tKiMFng/edit#gid=2041005678"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        940,
+        40
+      ],
+      "id": "c7fe3faa-c9b8-4a5b-a907-62d4e874cd03",
+      "name": "GET_FAQS",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ENz9FjMCxgwWy2qy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        40
+      ],
+      "id": "44b442eb-eebe-4a93-9610-570438f64414",
+      "name": "SEND_GMAIL",
+      "webhookId": "e959051f-ae3d-4471-aed1-389a4ba31f90",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.chatInput }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "CONSULTA_FAQS",
+              "description": "Todo lo relacionado con consultas comerciales. Ejemplo: que horario tienen, como contacto con ustedes, que servicios ofrecen, etc."
+            },
+            {
+              "category": "CAPTACION_LEADS",
+              "description": "Todo lo relacionado con la posibilidad de captar datos de ese cliente como potencial cliente de nuestra agencia. Ejemplo: quiero un servicio de automatizacion, correo electronico para contacto (cuerpo de correo solicitando automatizacion, especificaciones proyecto, datos personales del cliente, etc.)"
+            }
+          ]
+        },
+        "options": {
+          "fallback": "other"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        0
+      ],
+      "id": "75a1668c-77ff-479e-8f94-595c9d0ab5c6",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Eres un chatbot profesional de una pagina web para una agencia de IA muy reconocida a nivel mundial. Tu proposito consiste en:\n- Enviar correos electronicos profesionales captando los datos de entrada del usuario solicitando siempre los siguientes datos previo al envio del correo:\n  - Que tipo de automatizacion necesitas\n  - Numero de telefono\n  - Tu nombre\n\nUtilizan la herramienta \"SEND_GMAIL1\" para enviar el correo electronico."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        740,
+        220
+      ],
+      "id": "3a58290a-f9c4-4220-b6dd-9765c68afdc4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        780,
+        400
+      ],
+      "id": "12ec629f-08a1-48b6-a731-496552de4b85",
+      "name": "Postgres Chat Memory1",
+      "credentials": {
+        "postgres": {
+          "id": "YlRKBeiX0ktidVSC",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "fabrizziolopresti1999@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        940,
+        400
+      ],
+      "id": "b847a91e-ca1b-418b-860c-d27866bd45ad",
+      "name": "SEND_GMAIL1",
+      "webhookId": "e959051f-ae3d-4471-aed1-389a4ba31f90",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET_FAQS": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND_GMAIL": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND_GMAIL1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b5be5c9a-df54-4564-84ec-88d4ed9a9974",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "17R9uedE5Axqh7dh",
+  "tags": []
+}
