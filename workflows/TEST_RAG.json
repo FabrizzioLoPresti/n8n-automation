@@ -1,0 +1,1048 @@
+{
+  "name": "TEST_RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1gaR_MIwu3LBRuwne4hzqZfI5CM_emqwv",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1gaR_MIwu3LBRuwne4hzqZfI5CM_emqwv"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f941b73c-0c6e-4500-9c4a-e3485d2b530b",
+      "name": "FILE_CREATED",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9Qk6Rk1m5tBx6A48",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1gaR_MIwu3LBRuwne4hzqZfI5CM_emqwv",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1gaR_MIwu3LBRuwne4hzqZfI5CM_emqwv"
+        },
+        "event": "fileUpdated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        220
+      ],
+      "id": "a91f4b40-8083-44a1-903a-e6eac18ca707",
+      "name": "FILE_UPDATED",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9Qk6Rk1m5tBx6A48",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Eliminar duplicado de Base de Datos Vectorial mediante el ID",
+        "height": 280,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        280,
+        40
+      ],
+      "id": "2eeca046-06b3-467d-b433-4c721643b765",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('FILE_INFO').item.json.fileId }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "text/plain"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        980,
+        120
+      ],
+      "id": "a2c0ddee-a59c-4b12-bcd3-9e16af320790",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9Qk6Rk1m5tBx6A48",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e6ab4f6a-2cb3-4d61-914f-4c9b47fd19c1",
+              "name": "fileId",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "4c808194-b626-4085-8b13-6d6282dde9b8",
+              "name": "fileType",
+              "value": "={{ $json.mimeType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        120
+      ],
+      "id": "8cfdd77f-28ef-4e9c-8c84-5b0f67cb33f6",
+      "name": "FILE_INFO"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('FILE_INFO').item.json.fileType }}",
+                    "rightValue": "application/pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "f9ed501f-edde-476b-9c74-376d917927e1"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "19ed3e14-0a30-4620-a879-790453193fde",
+                    "leftValue": "={{ $('FILE_INFO').item.json.fileType }}",
+                    "rightValue": "application/vnd.google-apps.document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "DOCS"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4b9e7a56-e2ac-4095-b9b3-ddeba562302e",
+                    "leftValue": "={{ $('FILE_INFO').item.json.fileType }}",
+                    "rightValue": "application/vnd.google-apps.spreadsheet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "SPREADSHEET"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9a926c89-0b80-484e-a7b8-c702fa83c899",
+                    "leftValue": "={{ $('FILE_INFO').item.json.fileType }}",
+                    "rightValue": "application/vnd.openxmlformats-officedocument.spreadsheeteml.sheet",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "EXCEL"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        80
+      ],
+      "id": "ed73d9b1-c80a-437d-95ad-8e1311468271",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        -120
+      ],
+      "id": "9997b82b-61a5-463f-9546-1d28d12a1d7a",
+      "name": "EXTRACT_FROM_PDF"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        40
+      ],
+      "id": "d5f6a9c3-088d-4ee6-ac2f-b6b9849973d8",
+      "name": "EXTRACT_FROM_DOCS"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        200
+      ],
+      "id": "e6cd11be-d60b-4871-9c4c-3784f8114bab",
+      "name": "EXTRACT_FROM_CSV"
+    },
+    {
+      "parameters": {
+        "operation": "xlsx",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        360
+      ],
+      "id": "3d618109-b590-4cfa-b2d8-13def206e435",
+      "name": "EXTRACT_FROM_XLSX"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        360
+      ],
+      "id": "0de12e90-15c6-4bc2-b2dd-f4a9a76beebe",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "concatenate",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        2000,
+        360
+      ],
+      "id": "5552fb74-7d43-4a1c-a6a8-245ac84331e7",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        2260,
+        300
+      ],
+      "id": "f3634b42-a518-41a2-a73c-f8cd9a6c2bfd",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        2420,
+        300
+      ],
+      "id": "3d287619-1fef-4e93-8843-3aadb030415c",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "={{ $('FILE_INFO').item.json.fileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        2300,
+        120
+      ],
+      "id": "95e9dc44-9409-4461-ad4a-ac526f20c586",
+      "name": "Qdrant Vector Store",
+      "alwaysOutputData": true,
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 400,
+        "chunkOverlap": 80,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        480
+      ],
+      "id": "1d440506-fd9e-4adf-b7f3-db3dd23e96d9",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        440
+      ],
+      "id": "97f450a4-556e-48c9-8c2c-caa86013fd54",
+      "name": "When chat message received",
+      "webhookId": "f0fef15f-6b3d-47d3-a617-7deaa65102ea"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "=Eres un agente inteligente cuyo proposito fundamental consiste en la resolucion de dudas relacionadas con el contenido de archivos almacenados en una base de datos los cuales son subidos por los usuarios.\n\nSiempre ofreces respuestas con informacion contenida dentro de la base de datos y jamas deberas inventar informacion. Si no conoces la respuesta, le informas al usuario, pero no inventaras nada.\n\nHerramienta disponible: 'RAG_DATABASE'\n\nComo utilizar herramienta: 'RAG_DATABASE' siempre se utilizara para toda interaccion, aquello que se encuentre fuera de esta base de datos no sera respondido sin rigor.\n\nEjemplo: \nUsuario: \"Como configuro la API de Telegram?\" System: \"Informacion de la herramienta 'RAG_DATABASE'\"\n\nExcepciones:\nUsuario: \"Consulta fuera de la base de conocimiento\" System: \"Lo siento, actualmente no contamos con este tipo de informacion en nuestra base de conocimientos\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        280,
+        440
+      ],
+      "id": "0f0b2ecd-c770-4e46-a03f-bd8d8c3b9c9c",
+      "name": "RAG_AGENT"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        220,
+        660
+      ],
+      "id": "bde32ae2-40d8-40dc-8885-916fede4cb3a",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        480,
+        800
+      ],
+      "id": "b6cfe11e-b129-4974-9896-869475911a58",
+      "name": "Embeddings Ollama1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Work with your data in a Qdrant Vector Database collection",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "1THbzqygFGtM-N2P2cxvXcc6crMPKLoTg",
+          "mode": "list",
+          "cachedResultName": "1THbzqygFGtM-N2P2cxvXcc6crMPKLoTg"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        500,
+        660
+      ],
+      "id": "ac679675-222b-4766-9951-d0b903b2dc14",
+      "name": "RAG_DATABASE",
+      "credentials": {
+        "qdrantApi": {
+          "id": "sFfERYppMeBnFNeA",
+          "name": "Local QdrantApi database"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        360,
+        660
+      ],
+      "id": "b11d56d6-6a56-45b4-b7fa-ed46f1bd054d",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "YlRKBeiX0ktidVSC",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "test_uploaded_files",
+          "mode": "list",
+          "cachedResultName": "test_uploaded_files"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $('FILE_INFO').item.json.fileId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        540,
+        120
+      ],
+      "id": "6e440590-1c51-48e8-b7ff-da05b485e999",
+      "name": "Delete table or rows",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "YlRKBeiX0ktidVSC",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "deleteCollection",
+        "collectionName": {
+          "__rl": true,
+          "value": "={{ $('FILE_INFO').item.json.fileId }}",
+          "mode": "name"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-qdrant.qdrant",
+      "typeVersion": 1,
+      "position": [
+        760,
+        120
+      ],
+      "id": "5c5b8a94-b048-4b21-a5df-d6fe7e7a59d0",
+      "name": "Delete Collection",
+      "credentials": {
+        "qdrantRestApi": {
+          "id": "KhEsbrmBcGx1eLxn",
+          "name": "Qdrant account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "FILE_CREATED": [
+      {
+        "json": {
+          "parents": [
+            "1gaR_MIwu3LBRuwne4hzqZfI5CM_emqwv"
+          ],
+          "lastModifyingUser": {
+            "displayName": "Fabrizzio Mauro Lo Presti",
+            "kind": "drive#user",
+            "me": true,
+            "permissionId": "09093048887451242776",
+            "emailAddress": "fabrizziolopresti1999@gmail.com",
+            "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocITyILrkgOV7opqeIG0uALLFdDj7Cx_IESWaQ6AxrxkFeSAjPU=s64"
+          },
+          "owners": [
+            {
+              "displayName": "Fabrizzio Mauro Lo Presti",
+              "kind": "drive#user",
+              "me": true,
+              "permissionId": "09093048887451242776",
+              "emailAddress": "fabrizziolopresti1999@gmail.com",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocITyILrkgOV7opqeIG0uALLFdDj7Cx_IESWaQ6AxrxkFeSAjPU=s64"
+            }
+          ],
+          "permissions": [
+            {
+              "kind": "drive#permission",
+              "id": "09093048887451242776",
+              "type": "user",
+              "emailAddress": "fabrizziolopresti1999@gmail.com",
+              "role": "owner",
+              "displayName": "Fabrizzio Mauro Lo Presti",
+              "photoLink": "https://lh3.googleusercontent.com/a/ACg8ocITyILrkgOV7opqeIG0uALLFdDj7Cx_IESWaQ6AxrxkFeSAjPU=s64",
+              "deleted": false,
+              "pendingOwner": false
+            }
+          ],
+          "spaces": [
+            "drive"
+          ],
+          "capabilities": {
+            "canAcceptOwnership": false,
+            "canAddChildren": false,
+            "canAddMyDriveParent": false,
+            "canChangeCopyRequiresWriterPermission": true,
+            "canChangeItemDownloadRestriction": true,
+            "canChangeSecurityUpdateEnabled": false,
+            "canChangeViewersCanCopyContent": true,
+            "canComment": true,
+            "canCopy": true,
+            "canDelete": true,
+            "canDisableInheritedPermissions": false,
+            "canDownload": true,
+            "canEdit": true,
+            "canEnableInheritedPermissions": true,
+            "canListChildren": false,
+            "canModifyContent": true,
+            "canModifyContentRestriction": true,
+            "canModifyEditorContentRestriction": true,
+            "canModifyOwnerContentRestriction": true,
+            "canModifyLabels": false,
+            "canMoveChildrenWithinDrive": false,
+            "canMoveItemIntoTeamDrive": true,
+            "canMoveItemOutOfDrive": true,
+            "canMoveItemWithinDrive": true,
+            "canReadLabels": false,
+            "canReadRevisions": true,
+            "canRemoveChildren": false,
+            "canRemoveContentRestriction": false,
+            "canRemoveMyDriveParent": true,
+            "canRename": true,
+            "canShare": true,
+            "canTrash": true,
+            "canUntrash": true
+          },
+          "permissionIds": [
+            "09093048887451242776"
+          ],
+          "linkShareMetadata": {
+            "securityUpdateEligible": false,
+            "securityUpdateEnabled": true
+          },
+          "downloadRestrictions": {
+            "itemDownloadRestriction": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            },
+            "effectiveDownloadRestrictionWithContext": {
+              "restrictedForReaders": false,
+              "restrictedForWriters": false
+            }
+          },
+          "kind": "drive#file",
+          "id": "1THbzqygFGtM-N2P2cxvXcc6crMPKLoTg",
+          "name": "GustavoLoPresti_CV.pdf",
+          "mimeType": "application/pdf",
+          "starred": false,
+          "trashed": false,
+          "explicitlyTrashed": false,
+          "version": "3",
+          "webContentLink": "https://drive.google.com/uc?id=1THbzqygFGtM-N2P2cxvXcc6crMPKLoTg&export=download",
+          "webViewLink": "https://drive.google.com/file/d/1THbzqygFGtM-N2P2cxvXcc6crMPKLoTg/view?usp=drivesdk",
+          "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/pdf",
+          "hasThumbnail": true,
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBP0Ta6JetX5LPHdlkcyI5YvRAf8h5p5lp555MPtJ6dDh5MRnoDsW0w4qjL033i_o63-pWdpCT1Jf3kl7NSMN7X3i2Ynv5yK9fm0srU2-fSbRQU=s220",
+          "thumbnailVersion": "1",
+          "viewedByMe": true,
+          "viewedByMeTime": "2025-07-11T20:11:40.522Z",
+          "createdTime": "2025-07-11T20:11:40.522Z",
+          "modifiedTime": "2025-07-11T20:11:11.000Z",
+          "modifiedByMeTime": "2025-07-11T20:11:11.000Z",
+          "modifiedByMe": true,
+          "shared": false,
+          "ownedByMe": true,
+          "viewersCanCopyContent": true,
+          "copyRequiresWriterPermission": false,
+          "writersCanShare": true,
+          "originalFilename": "GustavoLoPresti_CV.pdf",
+          "fullFileExtension": "pdf",
+          "fileExtension": "pdf",
+          "md5Checksum": "abede72b58e2de4842c745b4e7bd8bcc",
+          "sha1Checksum": "40b2266deaba4b947d7c9b5052de10cbe1d97aff",
+          "sha256Checksum": "6ad45ae7463c136476f7719c7549b0610ae613043ae96d12ecb07895be5a0548",
+          "size": "97668",
+          "quotaBytesUsed": "97668",
+          "headRevisionId": "0BxQ19yEcAezEZ2luVHhqYUNGbys3Y2FybUgwdDN0QWZJN3djPQ",
+          "isAppAuthorized": false,
+          "inheritedPermissionsDisabled": false
+        }
+      }
+    ],
+    "EXTRACT_FROM_PDF": [
+      {
+        "json": {
+          "numpages": 2,
+          "numrender": 2,
+          "info": {
+            "PDFFormatVersion": "1.4",
+            "Language": "es_419",
+            "EncryptFilterName": null,
+            "IsLinearized": false,
+            "IsAcroFormPresent": false,
+            "IsXFAPresent": false,
+            "IsCollectionPresent": false,
+            "IsSignaturesPresent": false,
+            "Title": "GustavoLoPresti_CV",
+            "Producer": "Skia/PDF m140 Google Docs Renderer"
+          },
+          "text": "Lo Presti, Gustavo Pablo\nCórdoba, Argentina - gustavopablolopresti@gmail.com - Tel. 351 250‑5985\nLinkedIn\nResumen profesional\nContador Público Nacional con más de 20 años de experiencia en teneduría de libros, administración\nfinanciera y asesoramiento impositivo. Proactivo y organizado, experto en optimizar procesos\ncontables, generar reportes de alta precisión y garantizar el cumplimiento normativo.\n● Habilidad comprobada en gestión de tesorería, conciliaciones bancarias y liquidación de\nimpuestos.\n● Capacidad para liderar equipos y colaborar con stakeholders internos y externos.\nExperiencia laboral\nMutual del Personal de Adm. del Consejo Gral. de Educación\nAuxiliar Contable / Impositivo | Córdoba | Febrero 2017 – Presente\n● Llevanza de libros contables y registros financieros.\n● Elaboración y presentación de informes contables y declaraciones impositivas.\n● Cálculo y liquidación de sueldos y cargas sociales.\n● Optimización de procesos administrativos, reduciendo tiempos de cierre mensual en un 15 %.\nEl Bosque Club de Campo S.A.\nAdministrador General | Córdoba | Febrero 2016 – Septiembre 2016\n● Gestión de facturación de expensas y pagos a proveedores.\n● Conciliación de cuentas de clientes y proveedores.\n● Supervisión de la liquidación de sueldos e impuestos.\nPecunia S.A.\nAsesor Financiero | Córdoba | Febrero 2010 – Octubre 2014\n● Operaciones de cambio y tesorería, incluyendo transferencias internacionales.\n● Asesoramiento en inversiones inmobiliarias y planificación financiera.\n● Análisis de escenarios económicos y evaluación de riesgos.\nWindy S.A. (Lácteos)\nAdministrador General | Córdoba | Abril 2002 – Septiembre 2009\n● Diseño y control de plan de cuentas, cierres mensuales y conciliaciones bancarias.\n● Gestión de tesorería y facturación.\n● Coordinación de asistencia contable para reporting interno.\nEducación\nContador Público Nacional\nFacultad de Ciencias Económicas de la Universidad Nacional de Córdoba, Córdoba | Marzo 1988 –\nJulio 2004\n● Adquirí dominio en el análisis e interpretación de estados financieros.\n● Perfeccioné el uso de Microsoft Excel para modelar presupuestos y proyecciones financieras.\n● Desarrollé capacidad para diseñar y ejecutar cierres contables mensuales con alta precisión.\n● Integré criterios de control interno y normas de auditoría para garantizar cumplimiento\nnormativo.\nPerito Mercantil\nInstituto Secundario Sagrada Familia, Córdoba | Marzo 1983 – Diciembre 1987\n● Fortalecí conocimientos en registración de operaciones comerciales y contables.\n● Habilidad para llevar conciliaciones bancarias y ajustar diferencias en registros.\n● Comprendí profundamente los ciclos de gestión de cobranzas y pagos.\n\nCertificaciones y cursos\n● Excel (Básico, Intermedio, Avanzado)\n● Ajuste por Inflación, Consejo Profesional de Ciencias Económicas\n● Comercio Exterior e Internacional, Facultad de Ciencias Económicas (Cr. Gustavo Fadda)\n● Diplomatura en Formación para Directivos y Ejecutivos en Administración Financiera de\nMutuales\nIdiomas\nEspañol nativo\n● Redacción y presentación de informes contables, comunicaciones formales y\ncorrespondencia fiscal.\nInglés B2\n● Capacidad para comprender y comunicarme en un contexto profesional, participando en\nconversaciones básicas y redactando documentos con un nivel intermedio de competencia.\nHabilidades técnicas\n● Contabilidad: teneduría de libros, cierres mensuales, conciliaciones bancarias\n● Finanzas corporativas: tesorería, pronóstico y análisis de riesgos\n● Software: Microsoft Excel avanzado, Word, sistemas ERP contables\n● Impuestos: liquidación de IVA, Ganancias, Seguridad Social",
+          "version": "5.3.31"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "FILE_CREATED": {
+      "main": [
+        [
+          {
+            "node": "FILE_INFO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILE_UPDATED": {
+      "main": [
+        [
+          {
+            "node": "FILE_INFO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FILE_INFO": {
+      "main": [
+        [
+          {
+            "node": "Delete table or rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT_FROM_PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EXTRACT_FROM_DOCS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EXTRACT_FROM_CSV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EXTRACT_FROM_XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "EXTRACT_FROM_DOCS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT_FROM_XLSX": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT_FROM_PDF": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT_FROM_DOCS": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT_FROM_CSV": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG_AGENT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG_AGENT",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Ollama1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "RAG_DATABASE",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG_DATABASE": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG_AGENT",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG_AGENT",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete table or rows": {
+      "main": [
+        [
+          {
+            "node": "Delete Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Collection": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG_AGENT": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9c4b14e3-cb72-4250-be84-cc5ef07ad303",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "kQ9JLrCIVDwXrUdS",
+  "tags": []
+}
