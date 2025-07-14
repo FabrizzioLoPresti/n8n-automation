@@ -1,0 +1,221 @@
+{
+  "name": "TEST_WEBHOOKS",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "test_webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "efc5d8ad-df43-43f1-a72a-3ce7cd76933c",
+      "name": "Webhook",
+      "webhookId": "572a39c6-776a-4ead-bb54-af081a3ebce8"
+    },
+    {
+      "parameters": {
+        "url": "https://woodcock-coherent-deadly.ngrok-free.app/webhook-test/test_webhook",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "username",
+              "value": "Fabrizzio Mauro Lo Presti"
+            },
+            {
+              "name": "email",
+              "value": "fabrizziolopresti1999@gmail.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        360
+      ],
+      "id": "087dfb5c-da37-4700-a9b5-e1eb9c0382c0",
+      "name": "GET query params"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": 200, \n  \"sendTo\": \"{{ $('Edit Fields').item.json.email }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        840,
+        0
+      ],
+      "id": "902e716e-a115-41cc-8f1b-7274d95f586f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Genera un correo electronico breve dirigiendote a {{ $json.query.username }} informando sobre las ventajas de procesos de automatizacion.\n\nSolo retorna el cuerpo del correo electronico, sin asuntos ni firmas al final. No utilices saltos de linea con caracteres especiales, hazlo con <br> ya que el formato al enviar el mail con la herramienta \"SEND_GMAIL\" es HTML.\n\nUna vez generado el correo electronico envialo utilizando la herramienta \"SEND_GMAIL\" que tienes disponible para el envio de corres.",
+        "options": {
+          "systemMessage": "Eres un agente inteligente encargado de generar y enviar correos electronicos profesionales en el area de marketing con el objetivo de captar clientes para una agencia de inteligencia artificial y automatizacion de procesos."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ],
+      "id": "a874af49-1edf-4412-82b3-9fd23c38da5b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        420,
+        180
+      ],
+      "id": "6890d639-31df-40ed-9df5-fa92acc3be4a",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "xHuYe0MDGOs9IpBW",
+          "name": "Local Ollama service"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "331ec18d-e11f-42ca-aba5-207350c001b9",
+              "name": "username",
+              "value": "={{ $json.query.username }}",
+              "type": "string"
+            },
+            {
+              "id": "9c3bd5fc-20ed-4d7a-aee6-1b7b05f44489",
+              "name": "email",
+              "value": "={{ $json.query.email }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a768fd85-b23d-4ac9-9a90-27d925eeba1b",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Informacion de IA",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        180
+      ],
+      "id": "919b2a96-4065-450f-a5da-e278d95bf775",
+      "name": "SEND_GMAIL",
+      "webhookId": "bf9d2f9c-ac7f-4a0a-83a0-5782501e5208",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "cNb7Hw9UPs8izh4u",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SEND_GMAIL": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "42be522d-81a2-4133-9ce9-8ef053af9ace",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "558d88703fb65b2d0e44613bc35916258b0f0bf983c5d4730c00c424b77ca36a"
+  },
+  "id": "kfJB9Chju8yGeYwe",
+  "tags": []
+}
